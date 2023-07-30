@@ -8,10 +8,6 @@
 
 Ini adalah contoh proyek API untuk keperluan tes pemrograman dengan menggunakan Laravel. Proyek ini hanya mempunyai satu modul courier dengan fitur CRUD yang tanpa menggunakan view/front end.
 
-## Dokumentasi
-
-Dokumentasi proyek ini ada pada bagian [Wiki - Dokumentasi](https://github.com/fanajib5/courier-backend/wiki/Dokumentasi)
-
 ## Keterangan versi
 
 Proyek ini dibangun pada _OS Windows 11_ dengan detail versi sebagai berikut:
@@ -19,6 +15,10 @@ Proyek ini dibangun pada _OS Windows 11_ dengan detail versi sebagai berikut:
 - PHP 8.2 (via Laragon)
 - Laravel 10
 - MySQL 5.7.33 (via Laragon)
+
+## Dokumentasi API
+
+Dokumentasi proyek ini ada pada bagian [Wiki - Dokumentasi](https://github.com/fanajib5/courier-backend/wiki/Dokumentasi)
 
 ## Instalasi
 
