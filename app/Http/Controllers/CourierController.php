@@ -17,7 +17,7 @@ class CourierController extends Controller
     {
         // assign initial/default variables
         $additionalMsg = "";
-        $couriers = Courier::orderBy('name', 'ASC');
+        $couriers = Courier::orderBy('name', 'ASC')->get();
         $responseCode = Response::HTTP_OK;
         $responseMessage = Response::$statusTexts[$responseCode];
 
