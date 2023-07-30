@@ -38,7 +38,7 @@ class CourierTest extends \Tests\TestCase
     {
         $this->withoutExceptionHandling();
         $response = $this->get("api/couriers?pageSize=" . null);
-        $response->assertStatus(422);
+        $response->assertStatus(400);
     }
 
     // sort by DOJ Descending
@@ -102,7 +102,7 @@ class CourierTest extends \Tests\TestCase
     {
         $this->withoutExceptionHandling();
         $response = $this->get("api/couriers?sort=" . null);
-        $response->assertStatus(422);
+        $response->assertStatus(400);
     }
 
     // search by Name value
@@ -113,7 +113,7 @@ class CourierTest extends \Tests\TestCase
         $response->assertStatus(200);
     }
 
-    // search by name that doesn"t exist
+    // search by name that doesn't exist
     public function test_expected_to_get_error_by_non_existent_name_in_courier_list_data(): void
     {
         $this->withoutExceptionHandling();
@@ -134,7 +134,7 @@ class CourierTest extends \Tests\TestCase
     {
         $this->withoutExceptionHandling();
         $response = $this->get("api/couriers?search=" . null);
-        $response->assertStatus(422);
+        $response->assertStatus(400);
     }
 
     // search by level value
@@ -158,7 +158,7 @@ class CourierTest extends \Tests\TestCase
     {
         $this->withoutExceptionHandling();
         $response = $this->get("api/couriers?level=aku,faiq");
-        $response->assertStatus(422);
+        $response->assertStatus(400);
     }
 
     // search by null value
