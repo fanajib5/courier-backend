@@ -8,7 +8,6 @@ use App\Models\Courier;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Validation\Rule;
-use Illuminate\Support\Facades\Log;
 
 class CourierController extends Controller
 {
@@ -16,21 +15,23 @@ class CourierController extends Controller
     // show all courier
     public function index(Request $request)
     {
+        // assign initial/default variables
+        $additionalMsg = "";
+        $couriers = Courier::orderBy('name', 'ASC');
         $responseCode = Response::HTTP_OK;
         $responseMessage = Response::$statusTexts[$responseCode];
-        $additionalMsg = "";
-        $couriers = Courier::orderBy('name', 'ASC')->get();
 
         // check parameter query
-        $checkPageSize = array_key_exists("pageSize", $request->query());
-        $checkSortDoj = array_key_exists("sort", $request->query());
-        $checkSearchName = array_key_exists("search", $request->query());
         $checkLevelCourier = array_key_exists("level", $request->query());
+        $checkPageSize = array_key_exists("pageSize", $request->query());
+        $checkSearchName = array_key_exists("search", $request->query());
+        $checkSortDoj = array_key_exists("sort", $request->query());
 
-        $paginateCouriers = $request->query('pageSize');
-        $sortDOJ = $request->query('sort');
-        $searchName = $request->query('search');
+        // assign parameter value
         $levelCourier = $request->query('level');
+        $paginateCouriers = $request->query('pageSize');
+        $searchName = $request->query('search');
+        $sortDOJ = $request->query('sort');
 
         // paginate or pageSize response
         if ($checkPageSize)
@@ -46,13 +47,13 @@ class CourierController extends Controller
                 {
                     $responseCode = Response::HTTP_UNPROCESSABLE_ENTITY;
                     $responseMessage = Response::$statusTexts[$responseCode];
-                    $additionalMsg = " - Incorrect value. The pageSize value is non digit!";
+                    $additionalMsg = " - Incorrect value. '{$paginateCouriers}' is non digit!";
                     $couriers = null;
                 }
             }
             else
             {
-                $responseCode = Response::HTTP_UNPROCESSABLE_ENTITY;
+                $responseCode = Response::HTTP_BAD_REQUEST;
                 $responseMessage = Response::$statusTexts[$responseCode];
                 $additionalMsg = " - The pageSize value is null!";
                 $couriers = null;
@@ -82,7 +83,7 @@ class CourierController extends Controller
             }
             else
             {
-                $responseCode = Response::HTTP_UNPROCESSABLE_ENTITY;
+                $responseCode = Response::HTTP_BAD_REQUEST;
                 $responseMessage = Response::$statusTexts[$responseCode];
                 $additionalMsg = " - The sort by (DOJ or dateofjoined) value is null!";
                 $couriers = null;
@@ -101,7 +102,7 @@ class CourierController extends Controller
                 {
                     $responseCode = Response::HTTP_NOT_FOUND;
                     $responseMessage = Response::$statusTexts[$responseCode];
-                    $additionalMsg = " - Looks like the courier data with that name doesn't exist!";
+                    $additionalMsg = " - Looks like the courier data with name '{$searchName}' doesn't exist!";
                     $couriers = null;
                 }
             }
@@ -114,7 +115,7 @@ class CourierController extends Controller
             }
             else
             {
-                $responseCode = Response::HTTP_UNPROCESSABLE_ENTITY;
+                $responseCode = Response::HTTP_BAD_REQUEST;
                 $responseMessage = Response::$statusTexts[$responseCode];
                 $additionalMsg = " - The search of name value is null!";
                 $couriers = null;
@@ -136,15 +137,16 @@ class CourierController extends Controller
                     {
                         $responseCode = Response::HTTP_NOT_FOUND;
                         $responseMessage = Response::$statusTexts[$responseCode];
-                        $additionalMsg = " - Looks like the courier data with that level doesn't exist!";
+                        $additionalMsg = " - Looks like the courier data with level ["
+                            . implode(", ", $levelParts) . "] doesn't exist!";
                         $couriers = null;
                     }
                 }
                 else if (!preg_match('/\d/', $levelCourier))
                 {
-                    $responseCode = Response::HTTP_UNPROCESSABLE_ENTITY;
+                    $responseCode = Response::HTTP_BAD_REQUEST;
                     $responseMessage = Response::$statusTexts[$responseCode];
-                    $additionalMsg = " - Incorrect value. Please use digits when searching for level!";
+                    $additionalMsg = " - Incorrect value. Please use digits (eg. 1,2,3) when searching for level!";
                     $couriers = null;
                 }
             }
@@ -165,7 +167,7 @@ class CourierController extends Controller
     }
 
     //
-    // fungsi create
+    // create a courier data
     public function store(Request $request)
     {
         $request->validate([
@@ -212,7 +214,7 @@ class CourierController extends Controller
         if ($courier === null) {
             $responseCode = Response::HTTP_NOT_FOUND;
             $responseMessage = Response::$statusTexts[$responseCode];
-            $additionalMsg = " - Looks like the courier data with that ID doesn't exist!";
+            $additionalMsg = " - Looks like the courier data with ID={$id} doesn't exist!";
             $courier = null;
         }
 
@@ -224,25 +226,25 @@ class CourierController extends Controller
     }
 
     //
-    // fungsi update data courier
+    // function to update data courier
     public function update(Request $request, $id)
     {
         $responseCode = Response::HTTP_OK;
         $responseMessage = Response::$statusTexts[$responseCode];
-        $additionalMsg = " - Courier updated successfully";
+        $additionalMsg = " - Courier with ID={$id} updated successfully";
         $courier = Courier::find($id);
 
         if ($courier === null)
         {
             $responseCode = Response::HTTP_NOT_FOUND;
             $responseMessage = Response::$statusTexts[$responseCode];
-            $additionalMsg = " - Looks like the courier data with that ID doesn't exist!";
+            $additionalMsg = " - Looks like the courier data with ID={$id} doesn't exist!";
             $courier = null;
         }
         else
         {
             $request->validate([
-                'name' => 'string|regex:/^[a-zA-Z\pL\s\-]+$/u|max:255',
+                'name' => 'string|regex:/^[a-zA-Z\pL\s\-\,\.]+$/u|max:255',
                 'email' => 'email|unique:couriers,email|max:255',
                 'DOB' => 'date_format:Y-m-d',
                 'phone' => 'max:20',
@@ -263,18 +265,18 @@ class CourierController extends Controller
     }
 
     //
-    // fungsi hapus data courier
-    public function delete(Request $request, $id)
+    // delete data courier
+    public function delete($id)
     {
         $responseCode = Response::HTTP_OK;
         $responseMessage = Response::$statusTexts[$responseCode];
-        $additionalMsg = " - Courier deleted successfully";
+        $additionalMsg = " - Courier with ID={$id} deleted successfully";
         $courier = Courier::find($id);
 
         if ($courier === null) {
             $responseCode = Response::HTTP_NOT_FOUND;
             $responseMessage = Response::$statusTexts[$responseCode];
-            $additionalMsg = " - Looks like the courier data has deleted!";
+            $additionalMsg = " - Looks like the courier data with ID={$id} has deleted!";
             $courier = null;
         }
         else
