@@ -64,11 +64,11 @@ Proyek ini menggunakan route untuk fitur CRUD antara lain
 
 | Nama Route | Request Method | Endpoint                 | Hasil                                                      |
 |------------|----------------|--------------------------|------------------------------------------------------------|
-| index      | GET            | ```/api/couriers```      | menampilkan seluruh data ```courier```                     |
-| show       | GET            | ```/api/couriers/{id}``` | mengembalikan data ```courier``` pada ```id``` yang sesuai |
-| store      | POST           | ```/api/couriers```      | membuat data ```courier``` yang baru                       |
-| update     | PUT            | ```/api/couriers/{id}``` | memperbarui data ```courier``` pada ```id``` yang sesuai   |
-| destroy    | DELETE         | ```/api/courers/{id}```     | menghapus data ```courier``` pada ```id``` yang sesuai     |
+| index      | GET            | ```/api/couriers```      | menampilkan daftar seluruh item ```courier```                     |
+| show       | GET            | ```/api/couriers/{id}``` | mengembalikan item ```courier``` pada ```id``` yang cocok |
+| store      | POST           | ```/api/couriers```      | membuat item ```courier``` yang baru                       |
+| update     | PUT            | ```/api/couriers/{id}``` | memperbarui data ```courier``` pada ```id``` yang cocok   |
+| destroy    | DELETE         | ```/api/courers/{id}```     | menghapus item ```courier``` pada ```id``` yang cocok     |
 
 ### Parameter query
 
